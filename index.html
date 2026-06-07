@@ -4,8 +4,97 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PDsenF</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>html,body{margin:0;padding:0}</style>
 </head>
 <body>
   <div id="root"></div>
+  <script type="text/babel" data-type="module" data-presets="react">
+import React, { useState } from "https://esm.sh/react@18.2.0";
+import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
+import { BookOpen, Star, Eye, EyeOff } from "https://esm.sh/lucide-react@0.383.0?deps=react@18.2.0";
+
+const C = {
+  primary: "#1A5276",
+  primaryDark: "#143f5c",
+  primaryLite: "#2c6e9e",
+  bg: "#F8F9FA",
+  ink: "#1B2B3A",
+  sub: "#64748B",
+  faint: "#94A3B8",
+  border: "#E2E8F0",
+  green: "#16A34A",
+  greenBg: "#ECFDF3",
+  orange: "#EA8C2B",
+  orangeBg: "#FEF3E7",
+  redBg: "#FEF2F2",
+  red: "#DC2626",
+};
+
+function AuthScreen({ onSignIn }) {
+  const [show, setShow] = useState(false);
+  const [email, setEmail] = useState("");
+  const [pw, setPw] = useState("");
+
+  return (
+    <div className="h-full overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+      <div className="px-6 pb-8" style={{ paddingTop: 56 }}>
+        <div className="flex flex-col items-center" style={{ marginTop: 14 }}>
+          <div className="flex items-center justify-center"
+               style={{ width: 74, height: 74, background: C.primary, borderRadius: 22, boxShadow: "0 10px 24px rgba(26,82,118,.35)" }}>
+            <BookOpen size={36} color="#fff" />
+          </div>
+          <h1 className="font-extrabold" style={{ color: C.primary, fontSize: 38, marginTop: 14, letterSpacing: -1 }}>PDsenF</h1>
+          <p style={{ color: C.sub, fontSize: 16, marginTop: 2 }}>Your AI-powered learning companion</p>
+          <div className="flex items-center gap-2" style={{ background: "#EEF2F6", padding: "7px 14px", borderRadius: 999, marginTop: 14 }}>
+            <Star size={15} color="#F5B100" fill="#F5B100" />
+            <span className="font-semibold" style={{ color: C.primary, fontSize: 13 }}>Trusted by 50,000+ students</span>
+          </div>
+        </div>
+
+        <div className="bg-white" style={{ borderRadius: 24, padding: 24, marginTop: 26, boxShadow: "0 12px 30px rgba(20,40,60,.08)" }}>
+          <h2 className="font-extrabold" style={{ color: C.ink, fontSize: 26 }}>Welcome back</h2>
+
+          <p className="font-bold" style={{ color: C.sub, fontSize: 12, letterSpacing: 1, marginTop: 18 }}>EMAIL</p>
+          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@university.edu"
+                 className="w-full outline-none"
+                 style={{ background: "#EEF2F6", borderRadius: 14, padding: "15px 16px", fontSize: 15, color: C.ink, border: "none", marginTop: 8 }} />
+
+          <p className="font-bold" style={{ color: C.sub, fontSize: 12, letterSpacing: 1, marginTop: 18 }}>PASSWORD</p>
+          <div className="relative" style={{ marginTop: 8 }}>
+            <input value={pw} onChange={(e) => setPw(e.target.value)} type={show ? "text" : "password"} placeholder="••••••••"
+                   className="w-full outline-none"
+                   style={{ background: "#EEF2F6", borderRadius: 14, padding: "15px 44px 15px 16px", fontSize: 15, color: C.ink, border: "none" }} />
+            <button onClick={() => setShow(!show)} className="absolute" style={{ right: 14, top: 14, color: C.sub }}>
+              {show ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          <div className="text-right" style={{ marginTop: 12 }}>
+            <span className="font-semibold" style={{ color: C.primary, fontSize: 14 }}>Forgot password?</span>
+          </div>
+
+          <button onClick={onSignIn}
+                  className="w-full font-bold active:scale-[.98] transition-transform"
+                  style={{ background: C.primary, color: "#fff", borderRadius: 16, padding: "16px", fontSize: 17, marginTop: 16, boxShadow: "0 10px 22px rgba(26,82,118,.3)" }}>
+            Sign In
+          </button>
+        </div>
+
+        <p className="text-center" style={{ marginTop: 20, color: C.sub, fontSize: 15 }}>
+          Don't have an account? <span className="font-bold" style={{ color: C.primary }}>Sign up free</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return <AuthScreen onSignIn={() => {}} />;
+}
+
+createRoot(document.getElementById("root")).render(<App />);
+  </script>
 </body>
 </html>
