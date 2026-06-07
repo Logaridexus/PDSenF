@@ -13,7 +13,7 @@
   <script type="text/babel" data-type="module" data-presets="react">
 import React, { useState } from "https://esm.sh/react@18.2.0";
 import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
-import { BookOpen, Star, Eye, EyeOff } from "https://esm.sh/lucide-react@0.383.0?deps=react@18.2.0";
+import { BookOpen, Star, Eye, EyeOff, Home, Zap, Target, BarChart3 } from "https://esm.sh/lucide-react@0.383.0?deps=react@18.2.0";
 
 const C = {
   primary: "#1A5276",
@@ -90,8 +90,60 @@ function AuthScreen({ onSignIn }) {
   );
 }
 
+function BottomNav({ tab, setTab }) {
+  const items = [
+    { id: "home", label: "Home", Icon: Home },
+    { id: "quiz", label: "Quiz", Icon: Zap },
+    { id: "goals", label: "Goals", Icon: Target },
+    { id: "stats", label: "Stats", Icon: BarChart3 },
+  ];
+  return (
+    <div className="flex items-stretch" style={{ background: "#fff", borderTop: `1px solid ${C.border}`, padding: "8px 8px 18px", boxShadow: "0 -6px 20px rgba(20,40,60,.06)" }}>
+      {items.map(({ id, label, Icon }) => {
+        const on = tab === id;
+        return (
+          <button key={id} onClick={() => setTab(id)} className="flex-1 flex flex-col items-center gap-1 active:scale-95 transition-transform" style={{ padding: "6px 0" }}>
+            <div className="flex items-center justify-center" style={{ width: 44, height: 30, borderRadius: 12, background: on ? "#E5EFF7" : "transparent" }}>
+              <Icon size={22} color={on ? C.primary : C.faint} strokeWidth={on ? 2.6 : 2} />
+            </div>
+            <span className="font-semibold" style={{ fontSize: 12, color: on ? C.primary : C.faint }}>{label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function App() {
-  return <AuthScreen onSignIn={() => {}} />;
+  const [signedIn, setSignedIn] = useState(false);
+  const [tab, setTab] = useState("home");
+
+  return (
+    <div className="flex items-center justify-center min-h-screen w-full p-4"
+         style={{ background: "linear-gradient(135deg,#e8edf2,#dfe6ee)", fontFamily: "ui-sans-serif, system-ui, sans-serif" }}>
+      <div className="relative overflow-hidden"
+           style={{
+             width: 375, height: 812, background: C.bg, borderRadius: 44,
+             border: "10px solid #0c1620",
+             boxShadow: "0 30px 70px rgba(15,30,50,.45), 0 8px 20px rgba(0,0,0,.25)",
+           }}>
+        <div className="absolute left-1/2 z-30" style={{ top: 8, transform: "translateX(-50%)", width: 120, height: 26, background: "#0c1620", borderRadius: 20 }} />
+
+        {!signedIn ? (
+          <AuthScreen onSignIn={() => { setSignedIn(true); setTab("home"); }} />
+        ) : (
+          <div className="flex flex-col h-full">
+            <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+              <div style={{ padding: 20, paddingTop: 60 }}>
+                <p style={{ color: C.sub }}>Odaberi tab ispod 👇</p>
+              </div>
+            </div>
+            <BottomNav tab={tab} setTab={setTab} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 createRoot(document.getElementById("root")).render(<App />);
