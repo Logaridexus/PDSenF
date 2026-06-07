@@ -11,9 +11,9 @@
 <body>
   <div id="root"></div>
   <script type="text/babel" data-type="module" data-presets="react">
-import React, { useState } from "https://esm.sh/react@18.2.0";
+import React, { useState, useEffect } from "https://esm.sh/react@18.2.0";
 import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
-import { BookOpen, Star, Eye, EyeOff, Home, Zap, Target, BarChart3 } from "https://esm.sh/lucide-react@0.383.0?deps=react@18.2.0";
+import { BookOpen, Star, Eye, EyeOff, Home, Zap, Target, BarChart3, Bell, UploadCloud, Upload, Cpu, ChevronDown, ChevronRight } from "https://esm.sh/lucide-react@0.383.0?deps=react@18.2.0";
 
 const C = {
   primary: "#1A5276",
@@ -31,6 +31,13 @@ const C = {
   redBg: "#FEF2F2",
   red: "#DC2626",
 };
+
+const CHAPTERS = [
+  { n: 1, title: "Foundations of Machine Learning", pages: "pp. 1–48", qs: 12, topics: ["Supervised Learning", "Loss Functions", "Gradient Descent"] },
+  { n: 2, title: "Neural Network Architecture", pages: "pp. 49–102", qs: 18, topics: ["Perceptrons", "Backpropagation", "Activation Functions"] },
+  { n: 3, title: "Convolutional Neural Networks", pages: "pp. 103–154", qs: 14, topics: ["Convolutions", "Pooling", "Feature Maps"] },
+  { n: 4, title: "Recurrent Networks & LSTMs", pages: "pp. 155–198", qs: 10, topics: ["Sequences", "Vanishing Gradients", "Gates"] },
+];
 
 function AuthScreen({ onSignIn }) {
   const [show, setShow] = useState(false);
@@ -90,6 +97,108 @@ function AuthScreen({ onSignIn }) {
   );
 }
 
+function Dashboard() {
+  const [phase, setPhase] = useState("idle");
+  const [pct, setPct] = useState(0);
+  const [open, setOpen] = useState(1);
+
+  useEffect(() => {
+    if (phase !== "analyzing") return;
+    setPct(0);
+    const id = setInterval(() => {
+      setPct((p) => {
+        if (p >= 100) { clearInterval(id); setPhase("done"); return 100; }
+        return Math.min(100, p + 3);
+      });
+    }, 70);
+    return () => clearInterval(id);
+  }, [phase]);
+
+  const stage = pct < 35 ? "Reading document..." : pct < 70 ? "Identifying chapters..." : "Generating questions...";
+
+  return (
+    <div className="pb-6">
+      <div style={{ background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLite})`, padding: "52px 22px 24px", color: "#fff" }}>
+        <div className="flex justify-between items-start">
+          <div>
+            <p style={{ opacity: .85, fontSize: 15 }}>Good morning 👋</p>
+            <h1 className="font-extrabold" style={{ fontSize: 30, marginTop: 2 }}>Hello, Tena!</h1>
+          </div>
+          <div className="relative flex items-center justify-center" style={{ width: 46, height: 46, background: "rgba(255,255,255,.14)", borderRadius: 999 }}>
+            <Bell size={22} color="#fff" />
+            <span className="absolute" style={{ top: 10, right: 11, width: 9, height: 9, background: "#F59E0B", borderRadius: 999, border: "2px solid #1f5e87" }} />
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4" style={{ marginTop: -8 }}>
+        <div className="flex flex-col items-center text-center"
+             style={{ background: "#EAF0F6", border: `2px dashed ${C.primaryLite}`, borderRadius: 20, padding: "26px 18px", marginTop: 14 }}>
+          <div className="flex items-center justify-center" style={{ width: 64, height: 64, background: "#DCE6F0", borderRadius: 18 }}>
+            <UploadCloud size={30} color={C.primary} />
+          </div>
+          <h3 className="font-extrabold" style={{ color: C.ink, fontSize: 21, marginTop: 14 }}>Upload your PDF</h3>
+          <p style={{ color: C.sub, fontSize: 14, marginTop: 4 }}>AI will analyze and generate quiz questions</p>
+          <button onClick={() => setPhase("analyzing")}
+                  className="flex items-center gap-2 font-bold active:scale-95 transition-transform"
+                  style={{ background: C.primary, color: "#fff", borderRadius: 14, padding: "13px 22px", marginTop: 16, fontSize: 16, boxShadow: "0 8px 18px rgba(26,82,118,.28)" }}>
+            <Upload size={18} /> + Select File
+          </button>
+        </div>
+
+        {phase === "analyzing" && (
+          <div className="bg-white" style={{ borderRadius: 18, padding: 16, marginTop: 14, boxShadow: "0 8px 20px rgba(20,40,60,.06)" }}>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center animate-pulse" style={{ width: 40, height: 40, background: "#EEF2F6", borderRadius: 12 }}>
+                <Cpu size={20} color={C.primary} />
+              </div>
+              <div>
+                <p className="font-bold" style={{ color: C.ink, fontSize: 15 }}>AI Analysis in Progress</p>
+                <p style={{ color: C.sub, fontSize: 13 }}>Analyzing chapters and generating questions...</p>
+              </div>
+            </div>
+            <div style={{ height: 8, background: "#E7EDF3", borderRadius: 999, marginTop: 14, overflow: "hidden" }}>
+              <div style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg,${C.primary},${C.primaryLite})`, borderRadius: 999, transition: "width .15s linear" }} />
+            </div>
+            <p style={{ color: C.sub, fontSize: 13, marginTop: 8 }}>{pct}% — {stage}</p>
+          </div>
+        )}
+
+        <h2 className="font-extrabold" style={{ color: C.ink, fontSize: 20, margin: "22px 2px 12px" }}>Chapters</h2>
+        <div className="bg-white" style={{ borderRadius: 18, overflow: "hidden", boxShadow: "0 8px 20px rgba(20,40,60,.06)" }}>
+          {CHAPTERS.map((ch) => {
+            const isOpen = open === ch.n;
+            return (
+              <div key={ch.n} style={{ borderTop: ch.n > 1 ? `1px solid ${C.border}` : "none" }}>
+                <button className="w-full flex items-center gap-3 text-left" style={{ padding: "16px" }}
+                        onClick={() => setOpen(isOpen ? null : ch.n)}>
+                  <div className="flex items-center justify-center flex-shrink-0 font-extrabold"
+                       style={{ width: 36, height: 36, borderRadius: 10, background: isOpen ? C.primary : "#EEF2F6", color: isOpen ? "#fff" : C.sub, fontSize: 15 }}>
+                    {ch.n}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold truncate" style={{ color: C.ink, fontSize: 15 }}>{ch.title}</p>
+                    <p style={{ color: C.faint, fontSize: 13 }}>{ch.pages} · {ch.qs} questions</p>
+                  </div>
+                  {isOpen ? <ChevronDown size={18} color={C.sub} /> : <ChevronRight size={18} color={C.sub} />}
+                </button>
+                {isOpen && (
+                  <div style={{ padding: "0 16px 16px 16px", display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {ch.topics.map((t) => (
+                      <span key={t} className="font-semibold"
+                            style={{ background: "#EEF2F6", color: C.primary, borderRadius: 999, padding: "5px 12px", fontSize: 13 }}>{t}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function BottomNav({ tab, setTab }) {
   const items = [
     { id: "home", label: "Home", Icon: Home },
@@ -134,9 +243,7 @@ function App() {
         ) : (
           <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-              <div style={{ padding: 20, paddingTop: 60 }}>
-                <p style={{ color: C.sub }}>Odaberi tab ispod 👇</p>
-              </div>
+              {tab === "home" && <Dashboard />}
             </div>
             <BottomNav tab={tab} setTab={setTab} />
           </div>
