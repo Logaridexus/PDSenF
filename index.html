@@ -13,7 +13,7 @@
   <script type="text/babel" data-type="module" data-presets="react">
 import React, { useState, useEffect } from "https://esm.sh/react@18.2.0";
 import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
-import { BookOpen, Star, Eye, EyeOff, Home, Zap, Target, BarChart3, Bell, UploadCloud, Upload, Cpu, ChevronDown, ChevronRight } from "https://esm.sh/lucide-react@0.383.0?deps=react@18.2.0";
+import { BookOpen, Star, Eye, EyeOff, Home, Zap, Target, BarChart3, Bell, UploadCloud, Upload, Cpu, ChevronDown, ChevronRight, CheckCircle2, AlertCircle } from "https://esm.sh/lucide-react@0.383.0?deps=react@18.2.0";
 
 const C = {
   primary: "#1A5276",
@@ -39,11 +39,48 @@ const CHAPTERS = [
   { n: 4, title: "Recurrent Networks & LSTMs", pages: "pp. 155–198", qs: 10, topics: ["Sequences", "Vanishing Gradients", "Gates"] },
 ];
 
+const QUESTIONS = [
+  {
+    chapter: "Ch. 1 · Foundations",
+    q: "In supervised learning, what does the model use to learn the mapping from inputs to outputs?",
+    options: ["Unlabeled data", "Labeled training examples", "Random noise", "Reward signals"],
+    correct: 1,
+    explanation: "Supervised learning relies on labeled examples — each input is paired with its correct output, so the model can learn the input→output mapping.",
+  },
+  {
+    chapter: "Ch. 1 · Loss Functions",
+    q: "Which loss function is most commonly used for regression problems?",
+    options: ["Cross-entropy", "Hinge loss", "Mean Squared Error", "KL divergence"],
+    correct: 2,
+    explanation: "Mean Squared Error penalizes the squared gap between predicted and true values, making it the standard choice for regression.",
+  },
+  {
+    chapter: "Ch. 1 · Optimization",
+    q: "Which optimizer adapts the learning rate per-parameter using a running sum of squared gradients?",
+    options: ["SGD with Momentum", "AdaGrad", "Adam Optimizer", "RMSProp"],
+    correct: 1,
+    explanation: "AdaGrad accumulates the sum of squared gradients per parameter and scales each learning rate down accordingly — handy for sparse features.",
+  },
+  {
+    chapter: "Ch. 2 · Neural Networks",
+    q: "What is the role of an activation function in a neural network?",
+    options: ["To initialize weights", "To introduce non-linearity", "To shrink the dataset", "To store gradients"],
+    correct: 1,
+    explanation: "Without non-linear activations, stacked layers collapse into one linear transform. Activations let the network model complex functions.",
+  },
+  {
+    chapter: "Ch. 3 · CNNs",
+    q: "In a CNN, what primarily reduces the spatial dimensions of the feature maps?",
+    options: ["Dropout", "Pooling layers", "Batch normalization", "The softmax"],
+    correct: 1,
+    explanation: "Pooling layers (e.g. max-pooling) downsample feature maps, reducing spatial size while keeping the strongest activations.",
+  },
+];
+
 function AuthScreen({ onSignIn }) {
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
-
   return (
     <div className="h-full overflow-y-auto" style={{ scrollbarWidth: "none" }}>
       <div className="px-6 pb-8" style={{ paddingTop: 56 }}>
@@ -59,15 +96,12 @@ function AuthScreen({ onSignIn }) {
             <span className="font-semibold" style={{ color: C.primary, fontSize: 13 }}>Trusted by 50,000+ students</span>
           </div>
         </div>
-
         <div className="bg-white" style={{ borderRadius: 24, padding: 24, marginTop: 26, boxShadow: "0 12px 30px rgba(20,40,60,.08)" }}>
           <h2 className="font-extrabold" style={{ color: C.ink, fontSize: 26 }}>Welcome back</h2>
-
           <p className="font-bold" style={{ color: C.sub, fontSize: 12, letterSpacing: 1, marginTop: 18 }}>EMAIL</p>
           <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@university.edu"
                  className="w-full outline-none"
                  style={{ background: "#EEF2F6", borderRadius: 14, padding: "15px 16px", fontSize: 15, color: C.ink, border: "none", marginTop: 8 }} />
-
           <p className="font-bold" style={{ color: C.sub, fontSize: 12, letterSpacing: 1, marginTop: 18 }}>PASSWORD</p>
           <div className="relative" style={{ marginTop: 8 }}>
             <input value={pw} onChange={(e) => setPw(e.target.value)} type={show ? "text" : "password"} placeholder="••••••••"
@@ -77,18 +111,15 @@ function AuthScreen({ onSignIn }) {
               {show ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
-
           <div className="text-right" style={{ marginTop: 12 }}>
             <span className="font-semibold" style={{ color: C.primary, fontSize: 14 }}>Forgot password?</span>
           </div>
-
           <button onClick={onSignIn}
                   className="w-full font-bold active:scale-[.98] transition-transform"
                   style={{ background: C.primary, color: "#fff", borderRadius: 16, padding: "16px", fontSize: 17, marginTop: 16, boxShadow: "0 10px 22px rgba(26,82,118,.3)" }}>
             Sign In
           </button>
         </div>
-
         <p className="text-center" style={{ marginTop: 20, color: C.sub, fontSize: 15 }}>
           Don't have an account? <span className="font-bold" style={{ color: C.primary }}>Sign up free</span>
         </p>
@@ -101,7 +132,6 @@ function Dashboard() {
   const [phase, setPhase] = useState("idle");
   const [pct, setPct] = useState(0);
   const [open, setOpen] = useState(1);
-
   useEffect(() => {
     if (phase !== "analyzing") return;
     setPct(0);
@@ -113,9 +143,7 @@ function Dashboard() {
     }, 70);
     return () => clearInterval(id);
   }, [phase]);
-
   const stage = pct < 35 ? "Reading document..." : pct < 70 ? "Identifying chapters..." : "Generating questions...";
-
   return (
     <div className="pb-6">
       <div style={{ background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLite})`, padding: "52px 22px 24px", color: "#fff" }}>
@@ -130,7 +158,6 @@ function Dashboard() {
           </div>
         </div>
       </div>
-
       <div className="px-4" style={{ marginTop: -8 }}>
         <div className="flex flex-col items-center text-center"
              style={{ background: "#EAF0F6", border: `2px dashed ${C.primaryLite}`, borderRadius: 20, padding: "26px 18px", marginTop: 14 }}>
@@ -145,7 +172,6 @@ function Dashboard() {
             <Upload size={18} /> + Select File
           </button>
         </div>
-
         {phase === "analyzing" && (
           <div className="bg-white" style={{ borderRadius: 18, padding: 16, marginTop: 14, boxShadow: "0 8px 20px rgba(20,40,60,.06)" }}>
             <div className="flex items-center gap-3">
@@ -163,7 +189,6 @@ function Dashboard() {
             <p style={{ color: C.sub, fontSize: 13, marginTop: 8 }}>{pct}% — {stage}</p>
           </div>
         )}
-
         <h2 className="font-extrabold" style={{ color: C.ink, fontSize: 20, margin: "22px 2px 12px" }}>Chapters</h2>
         <div className="bg-white" style={{ borderRadius: 18, overflow: "hidden", boxShadow: "0 8px 20px rgba(20,40,60,.06)" }}>
           {CHAPTERS.map((ch) => {
@@ -199,6 +224,87 @@ function Dashboard() {
   );
 }
 
+function Quiz() {
+  const [idx, setIdx] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const q = QUESTIONS[idx];
+
+  function choose(i) {
+    if (picked !== null) return;
+    setPicked(i);
+    if (i === q.correct) setScore((s) => s + 1);
+  }
+
+  function next() {
+    if (idx + 1 >= QUESTIONS.length) { setDone(true); return; }
+    setIdx((i) => i + 1);
+    setPicked(null);
+  }
+
+  function restart() { setIdx(0); setPicked(null); setScore(0); setDone(false); }
+
+  if (done) return (
+    <div className="pb-6">
+      <div style={{ background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLite})`, padding: "52px 22px 24px", color: "#fff" }}>
+        <h1 className="font-extrabold" style={{ fontSize: 30 }}>Quiz Complete!</h1>
+      </div>
+      <div className="px-4">
+        <div className="bg-white flex flex-col items-center" style={{ borderRadius: 22, padding: 28, marginTop: 16, boxShadow: "0 10px 26px rgba(20,40,60,.07)" }}>
+          <span className="font-extrabold" style={{ color: C.primary, fontSize: 64 }}>{score}/{QUESTIONS.length}</span>
+          <p style={{ color: C.sub, fontSize: 16, marginTop: 8 }}>Questions answered correctly</p>
+          <button onClick={restart} className="w-full font-bold active:scale-[.98] transition-transform"
+                  style={{ background: C.primary, color: "#fff", borderRadius: 16, padding: 16, fontSize: 17, marginTop: 24, boxShadow: "0 10px 22px rgba(26,82,118,.3)" }}>
+            Try Again
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="pb-6">
+      <div style={{ background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLite})`, padding: "52px 22px 24px", color: "#fff" }}>
+        <p className="font-bold" style={{ opacity: .8, fontSize: 13, letterSpacing: 1 }}>{q.chapter}</p>
+        <h1 className="font-extrabold" style={{ fontSize: 26, marginTop: 4, lineHeight: 1.25 }}>{q.q}</h1>
+        <p style={{ opacity: .7, fontSize: 14, marginTop: 8 }}>Question {idx + 1} of {QUESTIONS.length}</p>
+      </div>
+      <div className="px-4" style={{ marginTop: 16 }}>
+        {q.options.map((opt, i) => {
+          let bg = "#fff", border = C.border, color = C.ink;
+          if (picked !== null) {
+            if (i === q.correct) { bg = C.greenBg; border = C.green; color = C.green; }
+            else if (i === picked && picked !== q.correct) { bg = C.redBg; border = C.red; color = C.red; }
+          }
+          return (
+            <button key={i} onClick={() => choose(i)} className="w-full flex items-center gap-3 text-left active:scale-[.99] transition-transform"
+                    style={{ background: bg, border: `2px solid ${border}`, borderRadius: 16, padding: "16px", marginBottom: 10 }}>
+              <span className="font-extrabold flex-shrink-0 flex items-center justify-center"
+                    style={{ width: 32, height: 32, borderRadius: 999, background: picked !== null && i === q.correct ? C.green : picked !== null && i === picked ? C.red : "#EEF2F6", color: picked !== null && (i === q.correct || i === picked) ? "#fff" : C.sub, fontSize: 14 }}>
+                {["A", "B", "C", "D"][i]}
+              </span>
+              <span className="font-semibold" style={{ color, fontSize: 15 }}>{opt}</span>
+              {picked !== null && i === q.correct && <CheckCircle2 size={20} color={C.green} style={{ marginLeft: "auto" }} />}
+              {picked !== null && i === picked && picked !== q.correct && <AlertCircle size={20} color={C.red} style={{ marginLeft: "auto" }} />}
+            </button>
+          );
+        })}
+        {picked !== null && (
+          <div style={{ background: "#EEF2F6", borderRadius: 16, padding: 16, marginTop: 6 }}>
+            <p className="font-bold" style={{ color: C.ink, fontSize: 14, marginBottom: 6 }}>Explanation</p>
+            <p style={{ color: C.sub, fontSize: 14, lineHeight: 1.5 }}>{q.explanation}</p>
+            <button onClick={next} className="w-full font-bold active:scale-[.98] transition-transform"
+                    style={{ background: C.primary, color: "#fff", borderRadius: 14, padding: "14px", fontSize: 16, marginTop: 14, boxShadow: "0 8px 18px rgba(26,82,118,.28)" }}>
+              {idx + 1 >= QUESTIONS.length ? "See Results" : "Next Question →"}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function BottomNav({ tab, setTab }) {
   const items = [
     { id: "home", label: "Home", Icon: Home },
@@ -226,24 +332,19 @@ function BottomNav({ tab, setTab }) {
 function App() {
   const [signedIn, setSignedIn] = useState(false);
   const [tab, setTab] = useState("home");
-
   return (
     <div className="flex items-center justify-center min-h-screen w-full p-4"
          style={{ background: "linear-gradient(135deg,#e8edf2,#dfe6ee)", fontFamily: "ui-sans-serif, system-ui, sans-serif" }}>
       <div className="relative overflow-hidden"
-           style={{
-             width: 375, height: 812, background: C.bg, borderRadius: 44,
-             border: "10px solid #0c1620",
-             boxShadow: "0 30px 70px rgba(15,30,50,.45), 0 8px 20px rgba(0,0,0,.25)",
-           }}>
+           style={{ width: 375, height: 812, background: C.bg, borderRadius: 44, border: "10px solid #0c1620", boxShadow: "0 30px 70px rgba(15,30,50,.45), 0 8px 20px rgba(0,0,0,.25)" }}>
         <div className="absolute left-1/2 z-30" style={{ top: 8, transform: "translateX(-50%)", width: 120, height: 26, background: "#0c1620", borderRadius: 20 }} />
-
         {!signedIn ? (
           <AuthScreen onSignIn={() => { setSignedIn(true); setTab("home"); }} />
         ) : (
           <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
               {tab === "home" && <Dashboard />}
+              {tab === "quiz" && <Quiz />}
             </div>
             <BottomNav tab={tab} setTab={setTab} />
           </div>
